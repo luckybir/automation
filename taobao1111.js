@@ -16,79 +16,74 @@ let patCatTimes = 0;
 
 
 
-
-
 configSet();
 
-let t = text("关闭");
-
-log(t.click());
-exit();
-
 runTaobaoScript();
-runZhifubaoScript();
+// runZhifubaoScript();
 closeConsole();
 
 function configSet() {
   setScreenMetrics(width, height);
 
-  dialogs.alert("请确认无障碍和悬浮窗权限已开启");
+  // dialogs.alert("请确认无障碍和悬浮窗权限已开启");
 
-  menu: while (true) {
-    var choose = dialogs.select(
-      "选择脚本速度",
-      "手机网速快",
-      "手机网速一般",
-      "手机网速较慢"
-    );
-    switch (choose) {
-      case -1:
-        toast("请选择");
-        continue menu;
-      case 0:
-        toast("手机网速快");
-        speed = 1;
-        break menu;
-      case 1:
-        toast("手机网速一般");
-        speed = 1.5;
-        break menu;
-      case 2:
-        toast("手机网速较慢");
-        speed = 2;
-        break menu;
+  // menu: while (true) {
+  //   var choose = dialogs.select(
+  //     "选择脚本速度",
+  //     "手机网速快",
+  //     "手机网速一般",
+  //     "手机网速较慢"
+  //   );
+  //   switch (choose) {
+  //     case -1:
+  //       toast("请选择");
+  //       continue menu;
+  //     case 0:
+  //       toast("手机网速快");
+  //       speed = 1;
+  //       break menu;
+  //     case 1:
+  //       toast("手机网速一般");
+  //       speed = 1.5;
+  //       break menu;
+  //     case 2:
+  //       toast("手机网速较慢");
+  //       speed = 2;
+  //       break menu;
 
-      default:
-        break;
-    }
-  }
+  //     default:
+  //       break;
+  //   }
+  // }
 
-  menu: while (true) {
-    var choose = dialogs.select(
-      "请选择自动执行以下程序任务：",
-      "淘宝",
-      "天猫(开发中)",
-      "支付宝"
-    );
-    switch (choose) {
-      case -1:
-        toast("请选择");
-        continue menu;
-      case 0:
-        taobaoTaskActive = true;
-        let patCatTimes = rawInput("输入淘宝拍猫次数（输入100的倍数）", 0);
-        break menu;
-      case 1:
-        log("开发中");
-        continue menu;
-      // break menu;
-      case 2:
-        zhifubaoTaskActive = true;
-        break menu;
-      default:
-        break;
-    }
-  }
+  // menu: while (true) {
+  //   var choose = dialogs.select(
+  //     "请选择自动执行以下程序任务：",
+  //     "淘宝",
+  //     "天猫(开发中)",
+  //     "支付宝"
+  //   );
+  //   switch (choose) {
+  //     case -1:
+  //       toast("请选择");
+  //       continue menu;
+  //     case 0:
+  //       taobaoTaskActive = true;
+  //       let patCatTimes = rawInput("输入淘宝拍猫次数（输入100的倍数）", 0);
+  //       break menu;
+  //     case 1:
+  //       log("开发中");
+  //       continue menu;
+  //     // break menu;
+  //     case 2:
+  //       zhifubaoTaskActive = true;
+  //       break menu;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+  taobaoTaskActive = true;
 
   console.show();
   auto.waitFor();
@@ -101,17 +96,14 @@ function runTaobaoScript() {
 
   let taobaoTaskFinish = false;
 
-  log("正在打开淘宝");
   launch("com.taobao.taobao");
-  log("请手动进入活动页面");
-  log("正在等待进入吸猫活动页面");
+  log("正在打开淘宝，等待进入吸猫活动页面");
   delay(3);
 
-  let getMiaoBi = textContains("喵币点击领取").findOnce();
-  if (getMiaoBi) {
-    getMiaoBi.click();
-  }
-
+  textContains("我的喵币").waitFor();
+  let startCoins = textContains("我的喵币").findOnce().text();
+  log(startCoins);
+  
   className("android.widget.Button").text("赚喵币").waitFor();
   delay(1);
   if (!textContains("累计任务奖励").exists()) {
@@ -120,6 +112,10 @@ function runTaobaoScript() {
   }
 
   delay(2.5);
+
+
+
+
 
   taobaoTaskList.forEach((task) => {
     while (textContains(task).exists()) {
@@ -227,6 +223,14 @@ function runTaobaoScript() {
     log("还剩" + patCatTimes + "次");
     delay(0.2);
   }
+
+  let getMiaoBi = textContains("喵币点击领取").findOnce();
+  if (getMiaoBi) {
+    getMiaoBi.click();
+  }
+
+  let endCoins = textContains("我的喵币").findOnce().text();
+  log(endCoins);
 
   log("淘宝任务完成");
 }

@@ -6,7 +6,7 @@ let taskNum = 0;
 let startCoins = 0;
 
 autoStart();
-taobaoAuto();
+selectTask();
 autoEnd();
 
 function autoStart() {
@@ -14,10 +14,129 @@ function autoStart() {
   auto.waitFor();
 }
 
+function selectTask() {
+  // let taskList = ["淘宝","支付宝"]
+  // let options = dialogs.multiChoice("执行的任务", taskList);
+  // log(options);
+
+  // if (options == '') {
+  //   return;
+  // }
+
+  // options.forEach((option) => {
+  //   switch (option) {
+  //     case 0:
+  //       taobaoAuto();
+  //       break;
+  //     case 1:
+  //       // zhifubaoAuto();
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // });
+
+  jdAuto();
+}
+
 function autoEnd() {
-  delay(10);
+  // delay(10);
   console.hide();
   exit();
+}
+
+function jdAuto() {
+  launchApp("京东");
+
+  text("去完成").waitFor();
+
+  let task = text("去完成").findOnce(3);
+
+  // if (task) {
+  log(task.parent().childCount());
+
+  for (let i = 0; i < task.parent().childCount(); i++) {
+    if ((i + 1) % 4 == 0) {
+      let taskStatus = task.parent().child(i).text();
+      log(i + ": " + taskStatus);
+
+      while (taskStatus == "去完成") {
+        delay(3);
+
+        let taskSubTitle = task
+          .parent()
+          .child(i - 2)
+          .text();
+
+        log(taskSubTitle);
+
+        let taskTitle = task
+          .parent()
+          .child(i - 1)
+          .text();
+
+        log(taskTitle);
+
+        switch (taskTitle) {
+          case "逛店8秒并关注可得8000金币":
+          case "浏览8秒可得5000金币":
+          case "浏览8秒可得7000金币":
+          case "浏览8秒可得10000金币":
+            click(taskStatus, 0);
+            delay(10);
+
+            // textContains("获得").waitFor();
+            back();
+
+            break;
+
+          // case "浏览可得2000金币":
+          //   click(taskStatus, 0);
+          //   delay(8);
+          //   back();
+          //   break;
+
+          // case "每邀1个好友可得10000金币":
+          // case "成功浏览5个商品可得8000金币":
+
+          //   break;
+
+          default:
+            taskStatus = "已完成";
+            break;
+        }
+      }
+    }
+  }
+  // }
+
+  // while (taskFinish) {
+  //   delay(2);
+
+  //   task = text("去完成").findOnce(k);
+  //   if (!task) {
+  //     taskFinish = true;
+  //   }
+
+  //   let taskTitle = task.parent().child(1);
+  //   switch (taskTitle) {
+  //     case "浏览8秒可得7000金币":
+  //     case "浏览可得2000金币":
+  //       click(taskTitle, 0);
+  //       delay(8);
+  //       back();
+
+  //       break;
+
+  //     case "每邀请1个好友可得10000金币":
+  //     case "成功浏览5个商品可得8000金币":
+  //       k++;
+  //       break;
+
+  //     default:
+  //       break;
+  //   }
+  // }
 }
 
 function taobaoAuto() {
@@ -25,15 +144,20 @@ function taobaoAuto() {
   log("正在打开淘宝，等待进入吸猫活动页面");
   delay(3);
 
+  taskFinish = false;
+  taskNum = 0;
+  startCoins = 0;
+
   checkTask();
   finishTask();
-  
+
   log("浏览任务已经完成,执行完毕");
 }
 
 function getCoins() {
-  delay(2);
   textContains("我的喵币").waitFor();
+
+  delay(4);
   let coinsText = textContains("我的喵币").findOnce().text();
   delay(2);
 

@@ -9,7 +9,7 @@ autoEnd();
 
 function autoStart() {
   console.show();
-  // console.hide();
+  console.hide();
   auto.waitFor();
 }
 
@@ -267,25 +267,30 @@ function jdAuto2() {
   text("可领金币").clickable(true).find().click();
   delay(2);
   textContains("当前开店进度").waitFor();
+
   let shops = className("android.view.View").clickable(true).find();
 
   // log(shops.length);
   for (let i = 0; i < shops.length; i++) {
     textContains("当前开店进度").waitFor();
     log("点击第" + (i + 1) + "个商店");
-    shops[i].click();    
+    shops[i].click();
 
     delay(3);
     textContains("完成").waitFor();
-    delay(2);
+    delay(4);
 
     let shopTask = text("去完成").clickable(true).find();
 
     for (let j = 0; j < shopTask.length; j++) {
       shopTask[j].click();
-      delay(2);
-      back();
-      delay(2);
+      delay(3);
+
+      if (!text("去完成").exists()) {
+        back();
+      }
+
+      delay(3);
     }
 
     back();
@@ -294,7 +299,6 @@ function jdAuto2() {
 
   back();
   delay(2);
-  back();
   log("营业版图任务结束");
 }
 

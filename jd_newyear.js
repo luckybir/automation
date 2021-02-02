@@ -3,22 +3,28 @@ let height = device.height;
 let width = device.width;
 let taskFinish = false;
 let taskSearchName = "去完成";
-let taskTitlePositon = 1;
-let taskSubTitlePosition = 2;
-let taskButtonPosition = 3;
 
 autoStart();
 selectTask();
 autoEnd();
 
 function autoStart() {
-  console.show();
-  // console.hide();
   auto.waitFor();
 }
 
 function selectTask() {
-  jdAuto();
+  let chosen = dialogs.confirm(
+    "特别声明",
+    "仅用于测试和学习研究，禁止用于商业用途，请匆转发并于下载后24小时内删除"
+  );
+
+  log("accept clause:" + chosen);
+
+  if (chosen == true) {
+    delay(2);
+    console.show();
+    jdAuto();
+  }
 }
 
 function autoEnd() {
@@ -31,7 +37,8 @@ function autoEnd() {
 function jdAuto() {
   launchApp("京东");
 
-  log("waiting for 集爆竹");
+  log("github.com/luckybir/automation");
+  log("wait for clicking 集爆竹");
   textContains("邀请好友助力").waitFor();
   delay(2);
 
@@ -43,20 +50,23 @@ function jdAuto() {
       log("no valid task");
       taskFinish = true;
     } else {
-      // log("tasks no:" + taskList.length);
+      log("tasks no:" + taskList.length);
     }
 
     delay(1);
 
     for (let i = 0; i < taskList.length; i++) {
+      delay(2);
+
       let taskTriggle = false;
 
       let taskParent = taskList[i].parent();
 
       // get task title
-      let taskTitle = taskParent.child(taskTitlePositon).text();
-      let taskSubTitle = taskParent.child(taskSubTitlePosition).text();
-      let button = taskParent.child(taskButtonPosition);
+      let childCount = taskParent.childCount();
+      let taskTitle = taskParent.child(childCount - 3).text();
+      let taskSubTitle = taskParent.child(childCount - 2).text();
+      let button = taskParent.child(childCount - 1);
 
       let taskCategory = getTaskCategory(taskTitle, taskSubTitle);
 
@@ -71,8 +81,7 @@ function jdAuto() {
           log("wait 15s");
           delay(15);
 
-          while (!textContains("小镇车站").exists()) {
-            // while (!textContains("完成").exists()) {
+          while (!textContains("邀请好友助力").exists()) {
             back();
             delay(2);
           }
@@ -188,15 +197,25 @@ function getTaskCategory(taskTitle, taskSubTitle) {
 }
 
 function clickButton(button) {
-  var bounds = button.bounds();
-  var width = bounds.right - bounds.left;
-  var high = bounds.bottom - bounds.top;
-  // log("bounds:" + bounds + "w:" + width + "h:" + high);
+  let bounds = button.bounds();
+  let width = bounds.right - bounds.left;
+  let high = bounds.bottom - bounds.top;
+
+  let x = random(bounds.left + width / 4, bounds.right - width / 4);
+  let y = random(bounds.top + high / 3, bounds.bottom - high / 3);
+  let t = random(50, 100);
+
+  // log("b:" + bounds);
+  // log("w:" + width);
+  // log("h:" + high);
+  // log("x:" + x);
+  // log("y:" + y);
+  // log("t:" + t);
 
   press(
-    random(bounds.left + width / 4, bounds.right - width / 4),
-    random(bounds.top + high / 3, bounds.bottom - high / 3),
-    random(50, 100)
+    x,
+    y,
+    t
   );
 }
 

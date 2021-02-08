@@ -2,7 +2,6 @@ let speed = 1.5;
 let height = device.height;
 let width = device.width;
 let taskFinish = false;
-let taskSearchName = "去完成";
 
 autoStart();
 selectTask();
@@ -13,18 +12,12 @@ function autoStart() {
 }
 
 function selectTask() {
-  let chosen = dialogs.confirm(
-    "特别声明",
-    "仅用于测试和学习研究，禁止用于商业用途，请匆转发并于下载后24小时内删除"
-  );
-
-  log("accept clause:" + chosen);
-
-  if (chosen == true) {
-    delay(2);
-    console.show();
-    jdAuto();
-  }
+  console.show();
+  log("github.com/luckybir/automation");
+  log("特别声明");
+  log("仅用于测试和学习研究，禁止用于商业用途，请匆转发并于下载后24小时内删除");
+  delay(2);
+  jdAuto();
 }
 
 function autoEnd() {
@@ -37,15 +30,18 @@ function autoEnd() {
 function jdAuto() {
   launchApp("京东");
 
-  log("github.com/luckybir/automation");
   log("wait for clicking 集爆竹");
   textContains("邀请好友助力").waitFor();
   delay(2);
 
+  let lastTaskSubTitle = "";
+  let lastTaskProcess = "";
+  let browse8sCumculateSeconds = 15;
+
   while (!taskFinish) {
     delay(2);
 
-    let taskList = textContains(taskSearchName).find();
+    let taskList = text("去完成").find();
     if (taskList.length == undefined || taskList.length == 0) {
       log("no valid task");
       taskFinish = true;
@@ -56,8 +52,6 @@ function jdAuto() {
     delay(1);
 
     for (let i = 0; i < taskList.length; i++) {
-      delay(2);
-
       let taskTriggle = false;
 
       let taskParent = taskList[i].parent();
@@ -69,6 +63,7 @@ function jdAuto() {
       let button = taskParent.child(childCount - 1);
 
       let taskCategory = getTaskCategory(taskTitle, taskSubTitle);
+      let taskProcess = getTasProcess(taskTitle);
 
       switch (taskCategory) {
         case "browse8s":
@@ -78,17 +73,35 @@ function jdAuto() {
           taskTriggle = true;
           clickButton(button);
 
-          log("wait 15s");
-          delay(15);
+          if (
+            lastTaskSubTitle != taskSubTitle ||
+            taskProcess != lastTaskProcess
+          ) {
+            browse8sCumculateSeconds = 15;
+          } else {
+            browse8sCumculateSeconds = browse8sCumculateSeconds + 15;
+          }
 
+          log("wait " + browse8sCumculateSeconds + "s");
+
+          delay(browse8sCumculateSeconds);
+
+          log("back to task list");
           while (!textContains("邀请好友助力").exists()) {
             back();
             delay(2);
+
+            //sometimes when click back popup a confirm dialog
+            if (text("下次再来哦").exists()) {
+              click("下次再来哦");
+              delay(2);
+            }
           }
 
-          log("task finish, back to task list");
-          delay(2);
+          delay(4);
 
+          lastTaskSubTitle = taskSubTitle;
+          lastTaskProcess = getTasProcess(taskTitle);
           break;
 
         case "cartGoods":
@@ -147,8 +160,9 @@ function jdAuto() {
           }
 
           console.show();
+          log("back to task list");
           back();
-          delay(3);
+          delay(5);
           break;
 
         default:
@@ -196,6 +210,17 @@ function getTaskCategory(taskTitle, taskSubTitle) {
   return taskCategory;
 }
 
+function getTasProcess(taskTitle) {
+  let regTaskTitle = /\(\d\/\d\)$/g;
+  let taskProcess = "";
+
+  if (regTaskTitle.test(taskTitle)) {
+    console.log("a");
+    taskProcess = taskTitle.match(regTaskTitle)[0];
+    return taskProcess;
+  }
+}
+
 function clickButton(button) {
   let bounds = button.bounds();
   let width = bounds.right - bounds.left;
@@ -212,11 +237,7 @@ function clickButton(button) {
   // log("y:" + y);
   // log("t:" + t);
 
-  press(
-    x,
-    y,
-    t
-  );
+  press(x, y, t);
 }
 
 function swipeRandom() {

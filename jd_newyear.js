@@ -211,11 +211,10 @@ function getTaskCategory(taskTitle, taskSubTitle) {
 }
 
 function getTasProcess(taskTitle) {
-  let regTaskTitle = /\(\d\/\d\)$/g;
+  let regTaskTitle = /\(\d+\/\d+\)$/g;
   let taskProcess = "";
 
   if (regTaskTitle.test(taskTitle)) {
-    console.log("a");
     taskProcess = taskTitle.match(regTaskTitle)[0];
     return taskProcess;
   }

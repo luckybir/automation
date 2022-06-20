@@ -1,0 +1,15 @@
+{
+    "name": "jd1111",
+    "main": "main.js",
+    "ignore": [
+        "build"
+    ],
+    "packageName": "com.wandoujia.phoenix2",
+    "versionName": "1.0.4",
+    "versionCode": 1,
+    "encryptLevel": 1, 
+    "optimization": {  
+        "removeOpenCv": true, 
+        "unusedResources": true 
+    }
+}

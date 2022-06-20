@@ -74,7 +74,7 @@ function jdAuto() {
           clickButton(button);
 
           browse8sCumculateSeconds = 7;
-          
+
           log("wait " + browse8sCumculateSeconds + "s");
 
           delay(browse8sCumculateSeconds);
@@ -210,10 +210,10 @@ function jdAuto() {
 
 function getTaskCategory(taskTitle, taskSubTitle) {
   let taskCategory = "";
-  let regTaskTitle = /^去小程序/g;
 
+  let regTaskTitle = /^去逛京东plus会员店/g;
   let regTaskSubTitle = /^(浏览|参与|逛店)\d+秒(并关注)?可得\d+/g;
-  if (regTaskSubTitle.test(taskSubTitle)) {
+  if (regTaskSubTitle.test(taskSubTitle) && !regTaskTitle.test(taskTitle)) {
     taskCategory = "browse8s";
     return taskCategory;
   }
@@ -230,8 +230,9 @@ function getTaskCategory(taskTitle, taskSubTitle) {
     return taskCategory;
   }
 
+  regTaskTitle = /^去小程序/g;
   regTaskSubTitle = /^(成功浏览|逛店|参与|浏览并关注)可得\d+/g;
-  if (regTaskSubTitle.test(taskSubTitle) && !regTaskTitle.test(taskTitle) ) {
+  if (regTaskSubTitle.test(taskSubTitle) && !regTaskTitle.test(taskTitle)) {
     taskCategory = "browse";
     return taskCategory;
   }
